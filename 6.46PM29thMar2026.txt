@@ -1,0 +1,55 @@
+C:\Users\Lenovo\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\torch\nn\modules\loss.py:610: UserWarning: Using a target size (torch.Size([1])) that is different to the input size (torch.Size([1, 1])). This will likely lead to incorrect results due to broadcasting. Please ensure they have the same size.
+  return F.mse_loss(input, target, reduction=self.reduction)
+Epoch 1/50 | Loss: 3.1135
+Epoch 2/50 | Loss: 2.8137
+Epoch 3/50 | Loss: 2.6826
+Epoch 4/50 | Loss: 2.5847
+Epoch 5/50 | Loss: 2.4988
+Epoch 6/50 | Loss: 2.4407
+Epoch 7/50 | Loss: 2.3942
+Epoch 8/50 | Loss: 2.3466
+Epoch 9/50 | Loss: 2.3197
+Epoch 10/50 | Loss: 2.2472
+Epoch 11/50 | Loss: 2.2199
+Epoch 12/50 | Loss: 2.1694
+Epoch 13/50 | Loss: 2.1486
+Epoch 14/50 | Loss: 2.1316
+Epoch 15/50 | Loss: 2.0787
+Epoch 16/50 | Loss: 2.0526
+Epoch 17/50 | Loss: 2.0242
+Epoch 18/50 | Loss: 2.0024
+Epoch 19/50 | Loss: 1.9961
+Epoch 20/50 | Loss: 1.9620
+Epoch 21/50 | Loss: 1.9421
+Epoch 22/50 | Loss: 1.9343
+Epoch 23/50 | Loss: 1.9484
+Epoch 24/50 | Loss: 1.8990
+Epoch 25/50 | Loss: 1.8893
+Epoch 26/50 | Loss: 1.8798
+Epoch 27/50 | Loss: 1.8620
+Epoch 28/50 | Loss: 1.8685
+Epoch 29/50 | Loss: 1.8403
+Epoch 30/50 | Loss: 1.8336
+Epoch 31/50 | Loss: 1.8319
+Epoch 32/50 | Loss: 1.8147
+Epoch 33/50 | Loss: 1.8181
+Epoch 34/50 | Loss: 1.7953
+Epoch 35/50 | Loss: 1.7849
+Epoch 36/50 | Loss: 1.7699
+Epoch 37/50 | Loss: 1.7722
+Epoch 38/50 | Loss: 1.7424
+Epoch 39/50 | Loss: 1.7487
+Epoch 40/50 | Loss: 1.7377
+Epoch 41/50 | Loss: 1.7303
+Epoch 42/50 | Loss: 1.7157
+Epoch 43/50 | Loss: 1.7020
+Epoch 44/50 | Loss: 1.7031
+Epoch 45/50 | Loss: 1.6913
+Epoch 46/50 | Loss: 1.6813
+Epoch 47/50 | Loss: 1.6749
+Epoch 48/50 | Loss: 1.6642
+Epoch 49/50 | Loss: 1.6797
+Epoch 50/50 | Loss: 1.6509
+
+Predicted Solubility for Ethanol (CCO): 1.7354
+PS C:\Users\Lenovo\Desktop\deskotp4\ChemML>   
