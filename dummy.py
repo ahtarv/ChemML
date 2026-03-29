@@ -31,3 +31,25 @@ adj_tensor = torch.tensor(A, dtype=torch.float)
 output = model(x_tensor, adj_tensor)
 print("New Hidden State Shape:", output.shape)
 #Result: (2 atoms, 32 learned features )
+
+
+class MoluecularGNN(nn.Module):
+    def __init__(self, input_dim):
+        super().__init__()
+        self.gnn_layer = SimpleGNN(input_dim, 32) #the brain 
+        self.predict_lyaer = nn.Linear(32,1)
+
+    def forward(self, x, adj):
+        #message passing(learning about neighbors)
+        h=self.gnn_layer(x,adj)
+
+        #global pooling (collapsing atoms into one molecule)
+        #result shape: [1,32]
+        mol_vec = torch.mean(h, dim=0, keepdim=True)
+
+        prediction = self.predict_lyaer(mol_vec)
+        return prediction 
+
+model = MoluecularGNN(input_size)
+final_score = model(x_tensor, adj_tensor)
+print(f"Final Prediction: {final_score.item():.4f}")
