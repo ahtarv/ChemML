@@ -1,0 +1,76 @@
+import torch 
+import torch.nn as nn 
+import torch.optim as optim 
+import pandas as pd 
+import numpy as np 
+from rdkit import Chem 
+
+class Featurizer:
+    def __init__(self):
+        self.known_atoms = ['C', 'N', 'O', 'S', 'F', 'Cl', 'Br', 'I']
+        self.known_degrees = [0,1,2,3,4,5]
+
+    def one_hot(self, value, choices):
+        encoding=[0.0] * len(choices)
+        if value in choices: encoding[choices.index(value)] = 1.0 
+        return encoding 
+
+    def get_matrices(self, smiles):
+        mol = Chem.MolFromSmiles(smiles)
+        if not mol: return None 
+        n_atoms = mol.GetNumAtoms()
+        X=[]
+        for atom in mol.GetAtoms():
+            feat = self.one_hot(atom.GetSymbol(), self.known_atoms) + \
+                    self.one_hot(atom.GetTotalDegree(), self.known_degrees) + \
+                    [float(atom.GetFormalCharge())]
+            X.append(feat)
+        A = np.zeros((n_atoms,n_atoms))
+        for bond in mol.GetBonds():
+            i, j = bond.GetBeginAtomIdx(), bond.GetEndAtomIdx()
+            A[i,j] = A[j,i] = 1.0 
+        np.fill_diagonal(A, 1.0) 
+        return torch.tensor(X, dtype=torch.float), torch.tensor(A, dtype=torch.float)
+
+class MolecularGNN(nn.Module):
+    def __init__(self, input_dim):
+        super().__init__()
+        self.gnn = nn.Linear(input_dim, 64)
+        self.predict_layer = nn.Linear(64,1)
+
+    def forward(self, x, adj):
+        h = torch.relu(self.gnn(torch.matmul(adj, x)))
+        mol_vec = torch.mean(h, dim=0, keepdim=True)
+        return self.predict_layer(mol_vec)
+
+df = pd.read_csv('delaney.csv')
+f = Featurizer()
+dataset = []
+
+print("preparing dataset....")
+for _, row in df.iterrows():
+    mats = f.get_matrices(row['SMILES'])
+    if mats: 
+        dataset.append((mats[0], mats[1], torch.tensor([row['measured log(solubility:mol/L)']], dtype=torch.float)))
+
+input_dim = len(f.known_atoms) + len(f.known_degrees) + 1
+model = MolecularGNN(input_dim)
+optimizer = optim.Adam(model.parameters(), lr=0.005)
+criterion = nn.MSELoss()
+
+print("\nStarting Training....")
+for epoch in range(1,21):
+    epoch_loss = 0 
+    for x, adj, target in dataset: 
+        output = model(x, adj)
+        optimizer.zero_grad()
+        loss=criterion(output, target)
+        loss.backward()
+        optimizer.step()
+        epoch_loss += loss.item()
+    print(f"Epoch {epoch}/20 | Loss: {epoch_loss/len(dataset):.4f}")
+
+test_smiles = "CCO"
+x,adj = f.get_matrices(test_smiles)
+pred = model(x, adj).item()
+print(f"\nPredicted Solubility for Ethanol ({test_smiles}): {pred:.4f}")
