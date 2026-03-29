@@ -46,14 +46,21 @@ class Featurizer:
 class MolecularGNN(nn.Module):
     def __init__(self, input_dim):
         super().__init__()
-        self.gnn = nn.Linear(input_dim, 64)
-        self.predict_layer = nn.Linear(64,1)
+        self.gnn1 = nn.Linear(input_dim, 64)
+        self.gnn2 = nn.Linear(64,64)
+        self.gnn3 = nn.Linear(64,32)
+        self.predict_layer = nn.Linear(32,1)
 
     def forward(self, x, adj):
-        h = torch.relu(self.gnn(torch.matmul(adj, x)))
-        mol_vec = torch.mean(h, dim=0, keepdim=True)
+        h1 = torch.relu(self.gnn1(torch.matmul(adj, x)))
+        h2 = torch.relu(self.gnn2(torch.matmul(adj, h1)))
+        h3 = torch.relu(self.gnn3(torch.matmul(adj, h2)))
+        
+        #SUM POOLING: Add all atoms together instead of averaging
+        mol_vec = torch.sum(h3, dim=0, keepdim=True)
+        
+        #Final Prediction
         return self.predict_layer(mol_vec)
-
 df = pd.read_csv('delaney.csv')
 f = Featurizer()
 dataset = []
@@ -66,7 +73,7 @@ for _, row in df.iterrows():
 
 input_dim = len(f.known_atoms) + len(f.known_degrees) + 1 + len(f.known_hybridizations) + 1
 model = MolecularGNN(input_dim)
-optimizer = optim.Adam(model.parameters(), lr=0.005)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
 criterion = nn.MSELoss()
 
 print("\nStarting Training....")
